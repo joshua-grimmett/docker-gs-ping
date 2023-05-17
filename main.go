@@ -16,11 +16,25 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.GET("/", func(c echo.Context) error {
-		return c.HTML(http.StatusOK, "Hello, Docker! <3")
+		return c.HTML(http.StatusOK, `
+			<form action="/" method="post">
+				<label for="fname">First name:</label><br>
+				<input type="text" id="fname" name="fname" value="John"><br>
+				<label for="lname">Last name:</label><br>
+				<input type="text" id="lname" name="lname" value="Doe"><br><br>
+				<input type="submit" value="Submit">
+			</form>
+		`)
 	})
 
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+	})
+
+	e.POST("/", func(c echo.Context) error {
+		fname := c.FormValue("fname")
+		lname := c.FormValue("lname")
+		return c.HTML(http.StatusOK, "<h1>Hello "+fname+" "+lname+"!</h1>")
 	})
 
 	httpPort := os.Getenv("PORT")
